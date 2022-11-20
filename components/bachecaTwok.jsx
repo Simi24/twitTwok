@@ -9,11 +9,11 @@ import TwokLoaderHelper from '../viewModel/twokLoeaderHelper';
 
 const helper = new TwokLoaderHelper()
 
-
+//TODO: visualizzare il twok con le opzioni del twok stesso
+//TODO:rendere immagine utente o nome cliccabile per andare sull'altra pagina, bacheca utente
 function BachecaTwok({navigation}){
   
     let[list, setList] = useState(null);
-
 
     useEffect(() => {handleRequest()}, []);
 
@@ -26,7 +26,7 @@ function BachecaTwok({navigation}){
         .then(result => console.log('tutto procede per il meglio'))
     }
 
-
+    //TODO: controllare il keyextractor, mette due figli con la stessa chiave
     return (
         <SafeAreaView style={styles.container}>
           <FlatList style={styles.listStyle} data={list}

@@ -10,22 +10,58 @@ let SM = new StorageManager();
 
 export default class TwokLoaderHelper{
 
-    async handleGetPicture(uid){
+    async handleStoreNewPicture(uid){
         await CommunicationController.getPicture(sid, uid)
-        .then(result=> {this.handleStoreUserPicture(result.uid, result.pversion, result.picture)} )
+                .then(
+                    result => {
+                        console.log("Prendo l'immagine che non ho", result)
+                        SM.storeUserPicture(result.uid, result.pversion, result.name, result.picture,
+                            risultatoStorePicture => console.log('Nuovo utente inserito', (risultatoStorePicture.nome), (risultatoStorePicture.uid)),
+                            error => console.log('errore in store user picture ',error)
+                            )
+                    }
+                )
+    }
+
+    async handleUpdatePicture(uid){
+        await CommunicationController.getPicture(sid, uid)
+                .then(
+                    result => {
+                        console.log("Prendo l'immagine che non ho", result)
+                        SM.updateUserPicture(result.uid, result.pversion, result.picture,
+                            risultatoUpdatePicture => console.log('Nuovo utente inserito', (risultatoUpdatePicture.nome), (risultatoUpdatePicture.uid)),
+                            error => console.log('errore in store user picture ',error)
+                            )
+                    }
+                )
+    }
+
+    //TODO: controllare anche se il nome utente è stato modificato
+    async handleStoreUserPicture2(sid, uid, pversion){
+        SM.getUserPicture(uid,
+            risultatoGetUserPicture => {console.log('risultato della ricerca nel db: ',(risultatoGetUserPicture)) ; if(risultatoGetUserPicture == 1){
+                this.handleStoreNewPicture(uid)
+            } else if(pversion > risultatoGetUserPicture.pversion) {
+                this.handleUpdatePicture(uid)
+            } else {
+                console.log('Non dobbiamo aggiornare il db')
+            }},
+            error => console.log('errore in getUserPicture', error)
+            )
     }
     
 
     async handleStoreUserPicture(sid, uid){
+
         
         await CommunicationController.getPicture(sid, uid)
                 .then(
                     resultGetPicture => {
-                        console.log(resultGetPicture.picture)
+                        console.log('Il risultato del getPicture del server', (resultGetPicture.name))
                         SM.getUserPicture(resultGetPicture.uid,
                             risultatoGetPicture => {console.log('il risultato del GetPicture:', risultatoGetPicture); if(risultatoGetPicture == 1){
                                 console.log('entro')
-                                SM.storeUserPicture(resultGetPicture.uid, resultGetPicture.pversion, resultGetPicture.picture,
+                                SM.storeUserPicture(resultGetPicture.uid, resultGetPicture.pversion, resultGetPicture.name, resultGetPicture.picture,
                                     risultatoStorePicture => console.log('Nuovo utente inserito ', (risultatoStorePicture)),
                                     error => console.log('errore in storeUserPicture', error)
                                     )
@@ -51,7 +87,7 @@ export default class TwokLoaderHelper{
             .then(result => {
                 //console.log('ho il risultato: ' + result.tid)
                 //let twok = new Twok(result.uid, result.name, result.pversion, result.tid, result.text)
-                this.handleStoreUserPicture(sid, result.uid)
+                this.handleStoreUserPicture2(sid, result.uid)
 
             listaTwok.push(result)})
             .catch(error => console.log('Error in createList: ' + i + error)) 
@@ -68,7 +104,7 @@ export default class TwokLoaderHelper{
         for(let i = 0; i < 3; i++)[
             await CommunicationController.getTwok(sid)
             .then(result => {
-                this.handleStoreUserPicture(sid, result.uid)
+                this.handleStoreUserPicture2(sid, result.uid)
                 lista.push(result);
                 console.log(lista.length)
             }).catch(error => console.log('Error in addTwok: ') + error)

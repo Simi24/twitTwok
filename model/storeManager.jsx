@@ -6,7 +6,7 @@ import CommunicationController from '../model/CC';
 export default class StorageManager{
     constructor() {
         this.db = SQLite.openDatabase("myDB");
-        const queryTable = 'CREATE TABLE IF NOT EXISTS PICTURE (uid INTEGER PRIMARY KEY, pVersion INTEGER, picture STRING)'
+        const queryTable = 'CREATE TABLE IF NOT EXISTS PICTURE (uid INTEGER PRIMARY KEY, pVersion INTEGER, name STRING, picture STRING)'
         this.db.transaction(tx => {
             tx.executeSql(queryTable)
         });
@@ -31,7 +31,7 @@ export default class StorageManager{
     getUserPicture(uid, onResult, onError){
         //console.log(uid)
         const transaction = (tx) =>{
-            let query = 'SELECT picture, pVersion from PICTURE where uid = ?'
+            let query = 'SELECT picture, name, pVersion from PICTURE where uid = ?'
             tx.executeSql(query, [uid],
                 (tx, queryResult) => {
                     if(queryResult.rows.length > 0) {
@@ -49,11 +49,11 @@ export default class StorageManager{
         this.db.transaction(transaction, error);
     };
 
-    storeUserPicture(uid, pVersion, picture, onResult, onError){
-        console.log(uid, pVersion, picture)
+    storeUserPicture(uid, pVersion, name, picture, onResult, onError){
+        console.log(uid, pVersion, name, picture)
         const transaction = (tx) =>{
-            let query = "INSERT INTO PICTURE VALUES(?, ?, ?)";
-            tx.executeSql(query, [uid, pVersion, picture],
+            let query = "INSERT INTO PICTURE VALUES(?, ?, ?, ?)";
+            tx.executeSql(query, [uid, pVersion, name, picture],
                 (tx, queryResult) => {  
                     if (queryResult.rows.length > 0) {
                         onResult(queryResult.rows._array[0].value)

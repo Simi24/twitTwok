@@ -14,7 +14,8 @@ import UtentiSeguiti from './components/utentiSeguiti'
 
 const Tab = createBottomTabNavigator();
 
-
+//TODO: guardare il primo avvio dell'app, mi da un sacco di errori nella lista, probabilmente perchè
+//non ha ancora scaricato il sid
 export default function App() {
   useEffect(() => {StorageManager.checkFirstRun()}, []);
   return (
