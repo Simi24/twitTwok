@@ -42,7 +42,12 @@ export default class CommunicationController {
 
     static async getTwok(sid, uid, tid){
         const endpoint = 'getTwok';
-        const parameter = {sid: sid, uid: uid, tid: tid}
+        let parameter = null;
+        if(uid == null){
+            parameter = {sid: sid, tid: tid}
+        } else {
+           parameter = {sid: sid, uid: uid, tid: tid} 
+        }
         return await CommunicationController.tiktwokRequest(endpoint, parameter)
     }
 
@@ -73,6 +78,12 @@ export default class CommunicationController {
     static async getFollowed(sid){
         const endpoint = 'getFollowed';
         const parameter = {sid: sid}
+        return await CommunicationController.tiktwokRequest(endpoint, parameter)
+    }
+
+    static async isFollowed(sid, uid){
+        const endpoint = 'isFollowed';
+        const parameter = {sid: sid, uid: uid}
         return await CommunicationController.tiktwokRequest(endpoint, parameter)
     }
 }

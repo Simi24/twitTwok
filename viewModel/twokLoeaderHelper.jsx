@@ -23,6 +23,7 @@ export default class TwokLoaderHelper{
                 )
     }
 
+
     async handleUpdatePicture(uid){
         await CommunicationController.getPicture(sid, uid)
                 .then(
@@ -49,7 +50,6 @@ export default class TwokLoaderHelper{
             error => console.log('errore in getUserPicture', error)
             )
     }
-    
 
     async handleStoreUserPicture(sid, uid){
 
@@ -100,7 +100,7 @@ export default class TwokLoaderHelper{
     }
 
     async addTwok(lista){
-        console.log(lista.length)
+        //console.log(lista.length)
         for(let i = 0; i < 3; i++)[
             await CommunicationController.getTwok(sid)
             .then(result => {
@@ -112,5 +112,24 @@ export default class TwokLoaderHelper{
 
         return lista
     }
+
+    async getUserTwoks(uid) {
+        let listaTwok = []
+        for(let i = 0; i < 5; i++){
+            await CommunicationController.getTwok(sid, uid)
+            .then(result => listaTwok.push(result))
+        }
+        return listaTwok
+    }
+
+    async addUserTwok(uid, lista){
+        for(let i = 0; i<3; i++){
+            await CommunicationController.getTwok(sid, uid)
+            .then(result => lista.push(result))
+        }
+        return lista
+    }
+
+    
 
 }
