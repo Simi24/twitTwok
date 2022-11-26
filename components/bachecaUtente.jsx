@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, Image, SafeAreaView, FlatList, Dimensions } from 'react-native';
-import {React, useState, useEffect, Component} from 'react';
+import {React, useState, useEffect, Component, useContext} from 'react';
 
+import SeguitiContext from '../context';
 
 import CommunicationController from '../model/CC';
 import StorageManager from '../model/storeManager';
@@ -9,24 +10,40 @@ import TwokLoaderHelper from '../viewModel/twokLoeaderHelper';
 
 import TwokRowUtente from './twokRowUtente';
 
+import HeaderBachecaUtente from './headerBachecaUtente';
+
 
 const SM = new StorageManager();
 const helper = new TwokLoaderHelper();
 
-
-function BachechaUtente({route, navigation}){
-    let [followed, setFollowed] = useState(false)
+function BachechaUtente(props){
     let [list, setList] = useState(null)
 
-    const uid = JSON.stringify(route.params.uid);
-    const sid = route.params.sid
+    const handleFollowContext = useContext(SeguitiContext)
+
+    console.log('seguiti context', handleFollowContext)
+    const uid = JSON.stringify(props.route.params.uid);
+    const sid = props.route.params.sid
+    
+
+    /* posso leggere il sid così
+    const contextType = SeguitiContext
+    console.log(contextType)*/
 
     useEffect(() => {handleRequest()}, []);
 
     async function handleRequest(){
         setList(await helper.getUserTwoks(uid))
         //console.log(JSON.parse(sid))
-        setFollowed((await CommunicationController.isFollowed(JSON.parse(sid), uid).catch(e => console.log(e))))
+        /*let utentiSeguiti = handleFollowContext.seguiti;
+        console.log('stampo gli utenti seguiti in bacheca utente', utentiSeguiti)
+        for(let i = 0; i < utentiSeguiti.length; i++){
+          if(utentiSeguiti[i].uid == uid){
+            setFollowed(true)
+          } else {
+            setFollowed(false)
+          }
+        }*/
         
     }
 
@@ -39,8 +56,19 @@ function BachechaUtente({route, navigation}){
     
         return(
         <SafeAreaView style={styles.container}>
-          <FlatList style={styles.listStyle} data={list}
-            renderItem={(twok)=>{return <TwokRowUtente data={twok} followed={followed.followed} sid={sid}/>}}
+          <View style={{
+            flex:1,
+            width: '100%',
+            flexDirection: 'row'
+          }}>
+            <HeaderBachecaUtente sid={sid} uid={uid}></HeaderBachecaUtente>
+          </View>
+          <View style={{
+            flex:4,
+            width: '100%'
+          }}>
+            <FlatList style={styles.listStyle} data={list}
+            renderItem={(twok)=>{return <TwokRowUtente data={twok} sid={sid}/>}}
             keyExtractor={(twok)=>list[twok]} 
             snapToInterval={Dimensions.get('window').height}
             snapToAlignment="start"
@@ -51,6 +79,8 @@ function BachechaUtente({route, navigation}){
             //onScrollEndDrag={()=>{handleScroll()}}
 
             />
+          </View>
+          
           <StatusBar style="auto" />
 
         </SafeAreaView>     

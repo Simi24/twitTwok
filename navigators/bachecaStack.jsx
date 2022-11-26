@@ -13,7 +13,7 @@ const StackBacheca = createNativeStackNavigator();
 export default function BachecaStack(){
     return(
         <StackBacheca.Navigator initialRouteName='BachecaTwok'>
-            <StackBacheca.Screen name='BachecaTwok' component={BachecaTwok} options={{headerStyle:styles.bar}}/>
+            <StackBacheca.Screen name='BachecaTwok' component={BachecaTwok}/>
             <StackBacheca.Screen name='BachechaUtente' component={BachechaUtente}/>
         </StackBacheca.Navigator>
     )

@@ -5,7 +5,7 @@ import StorageManager from "../model/storeManager";
 let sid = null;
 StorageManager.getSid()
 .then(result => sid = result)
-
+    
 let SM = new StorageManager();
 
 export default class TwokLoaderHelper{
@@ -24,26 +24,28 @@ export default class TwokLoaderHelper{
     }
 
 
-    async handleUpdatePicture(uid){
+    async handleUpdatePicture(uid, name){
         await CommunicationController.getPicture(sid, uid)
                 .then(
                     result => {
-                        console.log("Prendo l'immagine che non ho", result)
-                        SM.updateUserPicture(result.uid, result.pversion, result.picture,
-                            risultatoUpdatePicture => console.log('Nuovo utente inserito', (risultatoUpdatePicture.nome), (risultatoUpdatePicture.uid)),
+                        console.log("Update User")
+                        SM.updateUserPicture(result.uid, result.pversion, result.picture, result.name,
+                            risultatoUpdatePicture => console.log('Utente aggiornato'),
                             error => console.log('errore in store user picture ',error)
                             )
                     }
                 )
     }
 
-    //TODO: controllare anche se il nome utente è stato modificato
-    async handleStoreUserPicture2(sid, uid, pversion){
+    async handleStoreUserPicture2(sid, uid, pversion, name){
+        //console.log('pversion del getTwok: ', pversion)
+        //ritorna picture, name e pVersion
         SM.getUserPicture(uid,
-            risultatoGetUserPicture => {console.log('risultato della ricerca nel db: ',(risultatoGetUserPicture)) ; if(risultatoGetUserPicture == 1){
-                this.handleStoreNewPicture(uid)
-            } else if(pversion > risultatoGetUserPicture.pversion) {
-                this.handleUpdatePicture(uid)
+            risultatoGetUserPicture => {console.log('Utente trovato nel DB', pversion, risultatoGetUserPicture.pVersion, name, risultatoGetUserPicture.name) ; if(risultatoGetUserPicture == 1){
+                console.log('Utente non trovato nel DB, inseriamolo')
+                this.handleStoreNewPicture(uid, name)
+            } else if((pversion > risultatoGetUserPicture.pVersion) || (name != risultatoGetUserPicture.name)) {
+                this.handleUpdatePicture(uid, name)
             } else {
                 console.log('Non dobbiamo aggiornare il db')
             }},
@@ -51,43 +53,17 @@ export default class TwokLoaderHelper{
             )
     }
 
-    async handleStoreUserPicture(sid, uid){
-
-        
-        await CommunicationController.getPicture(sid, uid)
-                .then(
-                    resultGetPicture => {
-                        console.log('Il risultato del getPicture del server', (resultGetPicture.name))
-                        SM.getUserPicture(resultGetPicture.uid,
-                            risultatoGetPicture => {console.log('il risultato del GetPicture:', risultatoGetPicture); if(risultatoGetPicture == 1){
-                                console.log('entro')
-                                SM.storeUserPicture(resultGetPicture.uid, resultGetPicture.pversion, resultGetPicture.name, resultGetPicture.picture,
-                                    risultatoStorePicture => console.log('Nuovo utente inserito ', (risultatoStorePicture)),
-                                    error => console.log('errore in storeUserPicture', error)
-                                    )
-                                console.log(resultGetPicture.pversion, risultatoGetPicture)
-                            }else if((resultGetPicture.pversion) < (risultatoGetPicture.pVersion)){
-                                SM.updateUserPicture(resultGetPicture.uid, resultGetPicture.pversion, resultGetPicture.picture,
-                                    risultatoUpdate => console.log('Immagine utente aggiornata', risultatoUpdate),
-                                    error => console.log('errore in UpdateUser', error)
-                                    )
-                            }else {
-                                console.log('non dobbiamo aggiornare niente')
-                            }},
-                            error => console.log('errore in getUserPicture', error)
-                            )
-                    }
-    )}
     
+
     async createList() {
         let listaTwok = []
         for (let i = 0; i < 9; i++) {
             //console.log('faccio la richiesta numero: ' + i)
             await CommunicationController.getTwok(sid)
             .then(result => {
-                //console.log('ho il risultato: ' + result.tid)
+                //console.log('ho il risultato: ' + result.pversion)
                 //let twok = new Twok(result.uid, result.name, result.pversion, result.tid, result.text)
-                this.handleStoreUserPicture2(sid, result.uid)
+                this.handleStoreUserPicture2(sid, result.uid, result.pversion, result.name)
 
             listaTwok.push(result)})
             .catch(error => console.log('Error in createList: ' + i + error)) 
@@ -104,9 +80,8 @@ export default class TwokLoaderHelper{
         for(let i = 0; i < 3; i++)[
             await CommunicationController.getTwok(sid)
             .then(result => {
-                this.handleStoreUserPicture2(sid, result.uid)
+                this.handleStoreUserPicture2(sid, result.uid, result.pversion, result.name)
                 lista.push(result);
-                console.log(lista.length)
             }).catch(error => console.log('Error in addTwok: ') + error)
         ]
 

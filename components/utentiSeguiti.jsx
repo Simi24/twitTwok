@@ -1,11 +1,48 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
 
-import * as React from 'react';
+import FollowedLoaderHelper from '../viewModel/followedLoaderHelper';
 
-function UtentiSeguiti(){
+import {React, useState, useEffect, Component, useContext} from 'react';
+
+import StorageManager from '../model/storeManager';
+import SeguitiContext from '../context';
+
+import UtenteSeguito from './utenteSeguito';
+
+const helper = new FollowedLoaderHelper();
+
+function UtentiSeguiti(props){
+
+    const [seguiti, setSeguiti] = useState(null)
+    const [sid, setSid] = useState(null)
+    
+    const handleFollowContext = useContext(SeguitiContext)
+
+    //console.log('stampo i followed in utenti seguiti: ', handleFollowContext.seguiti)
+
+    useEffect(() => {handleRequest()})
+
+    function handleRequest() {
+       setSeguiti(handleFollowContext.seguiti)
+       setSid(handleFollowContext.sid)
+    }
+
+    const handleNavigation = (uid) =>{
+        props.navigation.navigate('BachechaUtente', {
+          uid: uid
+        })
+      }
+    
+      
     return(
-        <Text>Siamo nella pagina di utenti seguiti</Text>
+        <View>
+            <FlatList data={seguiti}
+            renderItem={(utente)=>{return <UtenteSeguito data={utente} handleNavigation={handleNavigation}/>}}
+            keyExtractor={(utente)=>utente.uid} 
+            />
+        </View>
+        
     )
 }
 

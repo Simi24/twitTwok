@@ -43,7 +43,7 @@ function BachecaTwok({navigation}){
           <FlatList style={styles.listStyle} data={list}
             renderItem={(twok)=>{return <TwokRow data={twok} handleNavigation={handleNavigation}/>}}
             keyExtractor={(twok)=>list[twok]} 
-            snapToInterval={Dimensions.get('window').height}
+            snapToInterval={(Dimensions.get('window').height - 130)}
             snapToAlignment="start"
             decelerationRate="fast"
             onEndReached={handleScroll}
