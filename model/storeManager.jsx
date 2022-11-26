@@ -49,8 +49,12 @@ export default class StorageManager{
         this.db.transaction(transaction, error);
     };
 
+<<<<<<< Updated upstream
     storeUserPicture(uid, pVersion, picture, onResult, onError){
         console.log(uid, pVersion, picture)
+=======
+    storeUserPicture(uid, pVersion, name, picture, onResult, onError){
+>>>>>>> Stashed changes
         const transaction = (tx) =>{
             let query = "INSERT INTO PICTURE VALUES(?, ?, ?)";
             tx.executeSql(query, [uid, pVersion, picture],
@@ -70,11 +74,10 @@ export default class StorageManager{
         this.db.transaction(transaction, error);
     }
 
-    updateUserPicture(uid, pVersion, picture, onResult, onError){
-        console.log(uid, pVersion, picture)
+    updateUserPicture(uid, pVersion, picture, name, onResult, onError){
         const transaction = (tx) =>{
-            let query = "UPDATE PICTURE SET picture = ?, pVersion= ? WHERE uid = ?";
-            tx.executeSql(query, [picture, pVersion, uid],
+            let query = "UPDATE PICTURE SET picture = ?, pVersion= ?, name=? WHERE uid = ?";
+            tx.executeSql(query, [picture, pVersion, name, uid],
                 (tx, queryResult) => {
                     onResult('Tutto a posto, immagine aggiornata')
                 }, 
