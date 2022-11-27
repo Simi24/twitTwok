@@ -30,15 +30,9 @@ function BachecaTwok({navigation}){
     return (
         <SafeAreaView style={styles.container}>
           <FlatList style={styles.listStyle} data={list}
-<<<<<<< Updated upstream
             renderItem={(twok)=>{return <TwokRow data={twok}/>}}
             keyExtractor={(twok)=>twok.id} 
             snapToInterval={Dimensions.get('window').height}
-=======
-            renderItem={(twok)=>{return <TwokRow data={twok} handleNavigation={handleNavigation}/>}}
-            keyExtractor={(twok)=>list[twok]} 
-            snapToInterval={(Dimensions.get('window').height - 130)}
->>>>>>> Stashed changes
             snapToAlignment="start"
             decelerationRate="fast"
             onEndReached={handleScroll}
